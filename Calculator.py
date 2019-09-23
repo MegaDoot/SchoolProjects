@@ -26,6 +26,7 @@ class App(tk.Tk):
         self.screen_val = tk.StringVar(self, value = "")
         self.screen = tk.Entry(self, state="normal", fg=FG, bg=BG, font=(FONT, 50), width = 0, textvariable=self.screen_val)
         self.screen.bind("<Key>", lambda event: "break")
+        self.screen.focus_set()
         #width=0: width is governed by 'sticky' parameter in grid
         
 
@@ -35,7 +36,7 @@ class App(tk.Tk):
         f("**", 0, 1, op=True)
         f("%", 0, 2, op=True)
         f("//", 0, 3, op=True)
-        f("CLR", 0, 4, command=self.screen_val.set(""))
+        f("CLR", 0, 4, command=lambda: self.screen_val.set(""))
 
         f("*", 1, 3, op=True)
         f("+", 2, 3, op=True)
@@ -51,7 +52,7 @@ class App(tk.Tk):
             row = 3-((n-1)//3)
             column = (n-1)%3
             print(row, column)
-            f(n, row, column)
+            f(str(n), row, column)
 
         f(0, 4, 0)
         f(".", 4, 1)
@@ -67,13 +68,26 @@ class App(tk.Tk):
         return self.screen.index(tk.INSERT)
     
     def add_text(self, text):
-        print(self.get_curs())
+        func = False
+        if text == "√":
+            text = "√()"
+            func = True
+        cursor_pos = self.get_curs()
+        print(cursor_pos)
         current = self.screen_val.get()
         current = list(current)
-        current.insert(self.get_curs()-1, text)
+        current.insert(cursor_pos, text)
         current = "".join(current)
         self.screen_val.set(current)
+        offset = len(text)
+        if func:
+            offset -= 1
+        self.screen.icursor(cursor_pos + offset)
         print(current)
+
+    def evaluate(self):
+        text = self.screen_val.get()
+        self.text.replace("√", "sqrt")
 
     def error(self):
         pass
