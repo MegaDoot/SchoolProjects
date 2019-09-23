@@ -7,8 +7,8 @@ FG = "black"
 BG = "white"
 FONT = "Monospace"
 BTN_STYLE = {"bg":BG, "fg":FG, "font":(FONT, 30)}
-ROWS = 4
-COLUMNS = 6
+ROWS = 6
+COLUMNS = 5
 BTN_HEIGHT = 60
 BTN_WIDTH = 100
 PADX = 3
@@ -32,12 +32,20 @@ class Functions:
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
+        for row in range(3):
+            self.grid_rowconfigure(row, weight=1)
+        self.grid_columnconfigure(0, weight=1)
         self.answer = tk.Entry(fg=FG,bg=BG)
         self.scale = 1
         self.entry_frame = tk.Frame(self, height=110)
         self.entry_frame.grid_columnconfigure(0, weight=1)
         self.entry_frame.grid_propagate(False)
         self.nums_frame = tk.Frame(self)
+        for column in range(COLUMNS):
+            self.nums_frame.grid_columnconfigure(column, weight=1)
+        for row in range(ROWS):
+            self.nums_frame.grid_rowconfigure(row, weight=1)
+        
         self.input_val = tk.StringVar(self, value = "")
         self.input = tk.Entry(self.entry_frame, state="normal", fg=FG, bg=BG, font=(FONT, 30), width=0, textvariable=self.input_val, bd=0, highlightthickness=0)
         self.input.bind("<Key>", lambda event: "break")
@@ -68,7 +76,6 @@ class App(tk.Tk):
         for n in range(1, 10):
             row = 3-((n-1)//3)
             column = (n-1)%3
-            print(row, column)
             f(str(n), row, column)
 
         f("0", 4, 0)
@@ -82,12 +89,18 @@ class App(tk.Tk):
         f("DEL", 5, 2, command=self.delete_char)
         f("Ans", 5, 3)
         f("=", 5, 4, command=self.evaluate)
+
         #Place down everything
-        
         self.input.grid(row=1, column=0, sticky="NESW")
         self.output.grid(row=2, column=0, sticky="NESW")
+        
         self.entry_frame.grid(row=0, column=0, sticky="NESW")
-        self.nums_frame.grid(row=3, column=0, sticky="NESW")
+        self.nums_frame.grid(row=2, column=0, sticky="NESW")
+
+        self.update_idletasks() # Updates winfo height and width
+        print(self.winfo_width(), self.winfo_height())
+        self.minsize(self.winfo_width(), self.winfo_height())
+        
         self.mainloop()
 
     def get_curs(self): #Entry cursor position
@@ -146,7 +159,6 @@ class App(tk.Tk):
     def add_btn(self, text, row, column, command=None, frame=None, rowspan=1, columnspan=1, operand=False):
         if frame is None:
             frame = self.nums_frame
-        print(text, command)
         if command is None:
             #print("command for '{}' is None".format(text))
             command = lambda: self.add_text(text, operand)
