@@ -34,6 +34,7 @@ class App(tk.Tk):
         super().__init__()
         for row in range(3):
             self.grid_rowconfigure(row, weight=1)
+        self.title("Easter Egg")
         self.grid_columnconfigure(0, weight=1)
         self.answer = tk.Entry(fg=FG,bg=BG)
         self.scale = 1
